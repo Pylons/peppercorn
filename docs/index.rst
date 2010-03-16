@@ -46,6 +46,11 @@ value is composed of a name and a type, separated by a colon
 - ``mapping``: begins a mapping.  Subsequent data elements will be
   added as key/value pairs in the mapping.
 
+``__start__`` markers can be unnamed; they are unnamed when their
+value does not contain a colon.  For example, the start marker
+``('__start__', 'mapping')`` begins a mapping with the implied name
+``''`` (the empty string).
+
 A sequence or mapping is closed when the corresponding ``__end__``
 token for its ``__start__`` token is processed.  Mappings and
 sequences can be nested arbitrarily.  The value of an ``__end__``
