@@ -5,7 +5,30 @@ class TestParse(unittest.TestCase):
         from peppercorn import parse
         return parse(fields)
         
-    def test_functional(self):
+    def _makeEnviron(self, kw=None):
+        if kw is None: # pragma: no cover
+            kw = {}
+        env = {
+            'wsgi.url_scheme': 'http',
+            'SERVER_NAME': 'localhost',
+            'SERVER_PORT': '8080',
+            'REQUEST_METHOD':'POST',
+            'PATH_INFO': '/',
+            'QUERY_STRING':'',
+            }
+        env.update(kw)
+        return env
+
+    def _makeMultipartFieldStorage(self, fields):
+        from cgi import FieldStorage
+        ct, body = encode_multipart_formdata(fields)
+        from StringIO import StringIO
+        kw = dict(CONTENT_TYPE=ct, REQUEST_METHOD='POST')
+        fp = StringIO(body)
+        environ = self._makeEnviron(kw)
+        return FieldStorage(fp=fp, environ=environ, keep_blank_values=1)
+
+    def _getFields(self):
         from peppercorn import START, END, MAPPING, SEQUENCE
         fields = [
             ('name', 'project1'),
@@ -26,9 +49,9 @@ class TestParse(unittest.TestCase):
             (END, 'dates:%s' % SEQUENCE),
             (END, 'series:%s' % MAPPING),
             ]
+        return fields
 
-        result = self._callFUT(fields)
-        
+    def _assertFieldsResult(self, result):
         self.assertEqual(
             result,
             {'series':
@@ -38,6 +61,21 @@ class TestParse(unittest.TestCase):
               },
              'name': 'project1',
              'title': 'Cool project'})
+
+    def test_bare(self):
+        fields = self._getFields()
+        result = self._callFUT(fields)
+        self._assertFieldsResult(result)
+        
+    def test_fieldstorage(self):
+        fs = self._makeMultipartFieldStorage(self._getFields())
+
+        fields = []
+        if fs.list:
+            for field in fs.list:
+                fields.append((field.name, field.value))
+        result = self._callFUT(fields)
+        self._assertFieldsResult(result)
 
     def test_bad_start_marker(self):
         from peppercorn import START
@@ -58,3 +96,18 @@ class TestParse(unittest.TestCase):
         result = self._callFUT(fields)
         self.assertEqual(result, {'': {'name':'fred'}})
         
+
+def encode_multipart_formdata(fields):
+    BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
+    CRLF = '\r\n'
+    L = []
+    for (key, value) in fields:
+        L.append('--' + BOUNDARY)
+        L.append('Content-Disposition: form-data; name="%s"' % key)
+        L.append('')
+        L.append(value)
+    L.append('--' + BOUNDARY + '--')
+    L.append('')
+    body = CRLF.join(L)
+    content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
+    return content_type, body
