@@ -12,6 +12,8 @@ Example "bare" usage:
   >>> fields = [
   ... ('name', 'project1'),
   ... ('title', 'Cool project'),
+  ... ('__start__', 'series:mapping'),
+  ... ('name', 'date series 1'),
   ... ('__start__', 'dates:sequence'),
   ... ('__start__', 'date:sequence'),
   ... ('day', '10'),
@@ -24,10 +26,13 @@ Example "bare" usage:
   ... ('year', '2009'),
   ... ('__end__', 'date:sequence'),
   ... ('__end__', 'dates:sequence'),
+  ... ('__end__', 'series:mapping'),
   ... ]
    >>> from peppercorn import parse
    >>> return pprint.pprint(parse(fields))
-   {'dates': [['10', '12', '2008'], ['10', '12', '2009']],
+   {'series':
+     {'name':'date series 1',
+      'dates': [['10', '12', '2008'], ['10', '12', '2009']]},
     'name': 'project1',
     'title': 'Cool project'}
 
@@ -47,6 +52,9 @@ sequences can be nested arbitrarily.  The value of an ``__end__``
 tokens is optional; it is useful as documentation, but they are
 not required by Peppercorn.
 
+The data structure returned from :func:`peppercorn.fields` will always
+be a mapping.
+
 To use Peppercorn in a web application, create a form that has the
 tokens in order.  For instance, the below form will generate the above
 token stream:
@@ -56,6 +64,8 @@ token stream:
    <form>
      <input name="name"/>
      <input name="title/>
+     <input type="hidden" name="__start__" value="series:mapping"/>
+     <input name="name"/>
      <input type="hidden" name="__start__" value="dates:sequence"/>
      <input type="hidden" name="__start__" value="date:sequence"/>
      <input name="day"/>
@@ -66,6 +76,7 @@ token stream:
      <input name="day"/>
      <input name="month"/>
      <input name="year"/>
+     <input type="hidden" name="__end__"/>
      <input type="hidden" name="__end__"/>
      <input type="hidden" name="__end__"/>
    </form>
