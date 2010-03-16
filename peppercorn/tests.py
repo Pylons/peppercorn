@@ -5,7 +5,7 @@ class TestParse(unittest.TestCase):
         from peppercorn import parse
         return parse(fields)
         
-    def test_it(self):
+    def test_functional(self):
         fields = [
             ('name', 'project1'),
             ('title', 'Cool project'),
@@ -38,3 +38,20 @@ class TestParse(unittest.TestCase):
              'name': 'project1',
              'title': 'Cool project'})
 
+    def test_bad_start_marker(self):
+        fields = [
+            ('__start__', 'something:unknown'),
+            ]
+        
+        self.assertRaises(ValueError, self._callFUT, fields)
+
+    def test_unnamed_start_marker(self):
+        fields = [
+            ('__start__', 'mapping'),
+            ('name', 'fred'),
+            ('__end__', ''),
+            ]
+
+        result = self._callFUT(fields)
+        self.assertEqual(result, {'': {'name':'fred'}})
+        
