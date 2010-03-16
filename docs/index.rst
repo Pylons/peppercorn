@@ -94,7 +94,7 @@ method:
 .. code-block:: python
    :linenos:
 
-   fields = request.items()
+   fields = request.POST.items()
    peppercorn.parse(fields)
 
 The ``list`` attribute of a Python ``cgi.FieldStorage`` object can
