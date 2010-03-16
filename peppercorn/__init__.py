@@ -1,6 +1,6 @@
 def data_type(value):
     if ':' in value:
-        return [ x.strip() for x in value.split(':', 1) ]
+        return [ x.strip() for x in value.rsplit(':', 1) ]
     return ('', value.strip())
 
 START = '__start__'
