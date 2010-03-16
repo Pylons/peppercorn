@@ -31,7 +31,9 @@ Example "bare" usage:
     'name': 'project1',
     'title': 'Cool project'}
 
-Two ``__start__`` token types exist:
+A ``__start__`` token pushes a data structure onto the stack.  Its
+value is composed of a name and a type, separated by a colon
+(e.g. ``date:sequence``).  Two ``__start__`` token types exist:
 
 - ``sequence``: begins a sequence.  Subsequent data elements will be
   added as positional elements in the sequence.
