@@ -88,8 +88,8 @@ token stream:
 
 Then when the web post reaches the application, call the
 :func:`peppercorn.parse` function with the ordered field pairs.  For a
-:term:`WebOb` request, this means using the request's ``items``
-method:
+:term:`WebOb` request, this means using the ``items`` method of a
+Webob MultiDict such as ``request.POST``:
 
 .. code-block:: python
    :linenos:
