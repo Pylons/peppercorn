@@ -6,24 +6,25 @@ class TestParse(unittest.TestCase):
         return parse(fields)
         
     def test_functional(self):
+        from peppercorn import START, END, MAPPING, SEQUENCE
         fields = [
             ('name', 'project1'),
             ('title', 'Cool project'),
-            ('__start__', 'series:mapping'),
+            (START, 'series:%s' % MAPPING),
             ('name', 'date series 1'),
-            ('__start__', 'dates:sequence'),
-            ('__start__', 'date:sequence'),
+            (START, 'dates:%s' % SEQUENCE),
+            (START, 'date:%s' % SEQUENCE),
             ('day', '10'),
             ('month', '12'),
             ('year', '2008'),
-            ('__end__', 'date:sequence'),
-            ('__start__', 'date:sequence'),
+            (END, 'date:%s' % SEQUENCE),
+            (START, 'date:%s' % SEQUENCE),
             ('day', '10'),
             ('month', '12'),
             ('year', '2009'),
-            ('__end__', 'date:sequence'),
-            ('__end__', 'dates:sequence'),
-            ('__end__', 'series:mapping'),
+            (END, 'date:%s' % SEQUENCE),
+            (END, 'dates:%s' % SEQUENCE),
+            (END, 'series:%s' % MAPPING),
             ]
 
         result = self._callFUT(fields)
@@ -39,17 +40,19 @@ class TestParse(unittest.TestCase):
              'title': 'Cool project'})
 
     def test_bad_start_marker(self):
+        from peppercorn import START
         fields = [
-            ('__start__', 'something:unknown'),
+            (START, 'something:unknown'),
             ]
         
         self.assertRaises(ValueError, self._callFUT, fields)
 
     def test_unnamed_start_marker(self):
+        from peppercorn import START, END, MAPPING
         fields = [
-            ('__start__', 'mapping'),
+            (START, MAPPING),
             ('name', 'fred'),
-            ('__end__', ''),
+            (END, ''),
             ]
 
         result = self._callFUT(fields)
