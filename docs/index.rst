@@ -66,9 +66,9 @@ token stream:
 
 .. code-block:: html
 
-   <form>
+   <form action="." method="post" enctype="multipart/form-data">
      <input name="name"/>
-     <input name="title/>
+     <input name="title"/>
      <input type="hidden" name="__start__" value="series:mapping"/>
      <input name="name"/>
      <input type="hidden" name="__start__" value="dates:sequence"/>
