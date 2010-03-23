@@ -119,6 +119,12 @@ also be used as a source of information:
    api.rst
    glossary.rst
 
+Resources
+---------
+
+See `the plope.com article about the genesis of Peppercorn
+<http://http://www.plope.com/peppercorn>`_.
+
 Indices and tables
 ------------------
 
