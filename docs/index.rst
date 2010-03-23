@@ -123,7 +123,7 @@ Resources
 ---------
 
 See `the plope.com article about the genesis of Peppercorn
-<http://http://www.plope.com/peppercorn>`_.
+<http://www.plope.com/peppercorn>`_.
 
 Indices and tables
 ------------------
