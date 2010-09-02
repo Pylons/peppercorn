@@ -96,11 +96,11 @@ class TestParse(unittest.TestCase):
         result = self._callFUT(fields)
         self.assertEqual(result, {'': {'name':'fred'}})
 
-    def test_first(self):
-        from peppercorn import START, END, FIRST, MAPPING
+    def test_rename(self):
+        from peppercorn import START, END, RENAME, MAPPING
         fields = [
             (START, MAPPING),
-            (START, 'name:' + FIRST),
+            (START, 'name:' + RENAME),
             ('bleev', 'fred'),
             ('blam', 'joe'),
             ('bloov', 'bob'),
@@ -108,7 +108,6 @@ class TestParse(unittest.TestCase):
             (END, ''),
             ]
 
-        import pdb; pdb.set_trace()
         result = self._callFUT(fields)
         self.assertEqual(result, {'': {'name':'fred'}})
         
