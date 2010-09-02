@@ -38,7 +38,7 @@ Example "bare" usage:
 
 A ``__start__`` token pushes a data structure onto the stack.  Its
 value is composed of a name and a type, separated by a colon
-(e.g. ``date:sequence``).  Two ``__start__`` token types exist:
+(e.g. ``date:sequence``).  Three ``__start__`` token types exist:
 
 - ``sequence``: begins a sequence.  Subsequent data elements will be
   added as positional elements in the sequence.
@@ -109,8 +109,8 @@ token stream:
      <input name="month"/>
      <input name="year"/>
      <input type="__hidden__" name="__start__" value="sex:rename"/>
-     <input type="radio" name="sex" value="male"/>
-     <input type="radio" name="sex" value="female"/>
+     <input type="radio" name="sex1" value="male"/>
+     <input type="radio" name="sex1" value="female"/>
      <input type="__hidden__" name="__end__"/>
      <input type="hidden" name="__end__"/>
      <input type="hidden" name="__end__"/>
