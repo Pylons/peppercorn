@@ -111,6 +111,17 @@ class TestParse(unittest.TestCase):
         result = self._callFUT(fields)
         self.assertEqual(result, {'': {'name':'fred'}})
         
+    def test_rename_no_subelements(self):
+        from peppercorn import START, END, RENAME, MAPPING
+        fields = [
+            (START, MAPPING),
+            (START, 'name:' + RENAME),
+            (END, ''),
+            (END, ''),
+            ]
+
+        result = self._callFUT(fields)
+        self.assertEqual(result, {'': {'name':''}})
         
 
 def encode_multipart_formdata(fields):

@@ -33,7 +33,10 @@ def stream(next, token):
                 token = next()
                 op, data = token
             if typ == RENAME:
-                out = out[0]
+                if out:
+                    out = out[0]
+                else:
+                    out = ''
             return name, out
         else:
             raise ValueError('Unknown stream start marker %s' % repr(token))

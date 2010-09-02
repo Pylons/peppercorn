@@ -1,6 +1,12 @@
 Changes
 =======
 
+0.3 (2010-09-02)
+----------------
+
+- 0.2 was a brownbag release; a case was not handled where ``rename``
+  operation types may not have children.  This release fixes that.
+
 0.2 (2010-09-02)
 ----------------
 
