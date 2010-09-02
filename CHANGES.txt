@@ -1,6 +1,17 @@
 Changes
 =======
 
+0.2 (2010-09-02)
+----------------
+
+- New operation type: ``rename``.  ``rename`` begins a special mode.
+  The value of the first subsequent data element in the stream will be
+  used within it's parent sequence or mapping; any remaining data
+  elements until the corresponding ``__end__`` marker are ignored.
+  This is mostly in support of radio buttons.  See the ``rename`` docs
+  within `http://docs.repoze.org/peppercorn
+  <http://docs.repoze.org.peppercorn>`_ for more information.
+
 0.1 (2010-03-23)
 ----------------
 

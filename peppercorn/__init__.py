@@ -7,6 +7,7 @@ START = '__start__'
 END = '__end__'
 SEQUENCE = 'sequence'
 MAPPING = 'mapping'
+RENAME = 'rename'
 
 def stream(next, token):
     """
@@ -16,8 +17,9 @@ def stream(next, token):
     op, data = token
     if op == START:
         name, typ = data_type(data)
-        if typ in (SEQUENCE, MAPPING):
-            if typ == SEQUENCE:
+        out = []
+        if typ in (SEQUENCE, MAPPING, RENAME):
+            if typ in (SEQUENCE, RENAME):
                 out = []
                 add = lambda x, y: out.append(y)
             else:
@@ -30,6 +32,8 @@ def stream(next, token):
                 add(key, val)
                 token = next()
                 op, data = token
+            if typ == RENAME:
+                out = out[0]
             return name, out
         else:
             raise ValueError('Unknown stream start marker %s' % repr(token))

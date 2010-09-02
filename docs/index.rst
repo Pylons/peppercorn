@@ -46,6 +46,33 @@ value is composed of a name and a type, separated by a colon
 - ``mapping``: begins a mapping.  Subsequent data elements will be
   added as key/value pairs in the mapping.
 
+- ``rename``: begins a special mode.  The value of the first
+  subsequent data element in the stream will be used within it's
+  parent sequence or mapping; any remaining data elements until the
+  corresponding ``__end__`` marker are ignored.
+
+  If the parent is a mapping, the key used in the mapping will be the
+  name of the ``rename`` token (when ``value="something:rename"``, the
+  key will be ``something``).  The value will be the value of the
+  first data element.
+
+  If the parent is a sequence, the ``rename`` token name is ignored,
+  and the value of the first data element is placed into the sequence.
+
+  ``rename`` is mostly for radio controls; we surround sets of radio
+  controls in a ``rename`` in order to provide a surrogate naming for
+  a group of radio control elements.  Radio control ``name``
+  attributes are used by the browser to perform grouping, so each
+  radio control that is a member of a the same group must share a
+  ``name`` attribute value.  Moreover, this group name must be unique
+  amongst all controls on the form to prevent "select bleeding"
+  between radio controls.  However, on the server side, we're
+  uninterested in participating in this disambiguation process and
+  it's easier to not know about it when the form is posted.  We just
+  want the selected value back in the pstruct to be recorded under a
+  well-known name.  This name will be the name of the ``rename`` token
+  surrounding some radio controls.
+
 ``__start__`` markers can be unnamed; they are unnamed when their
 value does not contain a colon.  For example, the start marker
 ``('__start__', 'mapping')`` begins a mapping with the implied name
@@ -54,7 +81,7 @@ value does not contain a colon.  For example, the start marker
 A sequence or mapping is closed when the corresponding ``__end__``
 token for its ``__start__`` token is processed.  Mappings and
 sequences can be nested arbitrarily.  The value of an ``__end__``
-tokens is optional; it is useful as documentation, but they are
+token is optional; it is useful as documentation, but they are
 not required by Peppercorn.
 
 The data structure returned from :func:`peppercorn.fields` will always
@@ -81,6 +108,10 @@ token stream:
      <input name="day"/>
      <input name="month"/>
      <input name="year"/>
+     <input type="__hidden__" name="__start__" value="sex:rename"/>
+     <input type="radio" name="sex" value="male"/>
+     <input type="radio" name="sex" value="female"/>
+     <input type="__hidden__" name="__end__"/>
      <input type="hidden" name="__end__"/>
      <input type="hidden" name="__end__"/>
      <input type="hidden" name="__end__"/>

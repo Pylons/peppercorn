@@ -95,6 +95,23 @@ class TestParse(unittest.TestCase):
 
         result = self._callFUT(fields)
         self.assertEqual(result, {'': {'name':'fred'}})
+
+    def test_first(self):
+        from peppercorn import START, END, FIRST, MAPPING
+        fields = [
+            (START, MAPPING),
+            (START, 'name:' + FIRST),
+            ('bleev', 'fred'),
+            ('blam', 'joe'),
+            ('bloov', 'bob'),
+            (END, ''),
+            (END, ''),
+            ]
+
+        import pdb; pdb.set_trace()
+        result = self._callFUT(fields)
+        self.assertEqual(result, {'': {'name':'fred'}})
+        
         
 
 def encode_multipart_formdata(fields):
