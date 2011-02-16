@@ -1,6 +1,15 @@
 Changes
 =======
 
+Next release
+------------
+
+- Moved to GitHub.
+
+- Pylons project docs theme.
+
+- Added tox configuration.
+
 0.3 (2010-09-02)
 ----------------
 
