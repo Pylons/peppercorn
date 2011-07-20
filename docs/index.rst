@@ -84,7 +84,7 @@ sequences can be nested arbitrarily.  The value of an ``__end__``
 token is optional; it is useful as documentation, but they are
 not required by Peppercorn.
 
-The data structure returned from :func:`peppercorn.fields` will always
+The data structure returned from :func:`peppercorn.parse` will always
 be a mapping.
 
 To use Peppercorn in a web application, create a form that has the
