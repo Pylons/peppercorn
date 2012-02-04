@@ -1,11 +1,5 @@
 import functools
-
-try:
-    next
-except NameError:
-    # for Python 2.4 & 2.5
-    def next(gen):
-        return gen.next()
+from peppercorn.compat import next
 
 def data_type(value):
     if ':' in value:

@@ -1,6 +1,5 @@
 import unittest
-import sys
-inPy3k = sys.version_info[0] == 3
+from peppercorn.compat import PY3
 
 class TestParse(unittest.TestCase):
     def _callFUT(self, fields):
@@ -25,7 +24,7 @@ class TestParse(unittest.TestCase):
         from cgi import FieldStorage
         ct, body = encode_multipart_formdata(fields)
         kw = dict(CONTENT_TYPE=ct, REQUEST_METHOD='POST')
-        if inPy3k:
+        if PY3: # pragma: no cover
             from io import BytesIO
             fp = BytesIO(body.encode('utf-8'))
         else:
@@ -33,7 +32,8 @@ class TestParse(unittest.TestCase):
             fp = StringIO(body)
         environ = self._makeEnviron(kw)
         headers = {'content-length': "%d" % len(body), "content-type": ct}
-        return FieldStorage(fp=fp, environ=environ, keep_blank_values=1, headers=headers)
+        return FieldStorage(fp=fp, environ=environ, keep_blank_values=1, 
+                            headers=headers)
 
     def _getFields(self):
         from peppercorn import START, END, MAPPING, SEQUENCE
