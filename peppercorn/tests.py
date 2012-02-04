@@ -1,4 +1,6 @@
 import unittest
+import sys
+inPy3k = sys.version_info[0] == 3
 
 class TestParse(unittest.TestCase):
     def _callFUT(self, fields):
@@ -22,11 +24,16 @@ class TestParse(unittest.TestCase):
     def _makeMultipartFieldStorage(self, fields):
         from cgi import FieldStorage
         ct, body = encode_multipart_formdata(fields)
-        from StringIO import StringIO
         kw = dict(CONTENT_TYPE=ct, REQUEST_METHOD='POST')
-        fp = StringIO(body)
+        if inPy3k:
+            from io import BytesIO
+            fp = BytesIO(body.encode('utf-8'))
+        else:
+            from StringIO import StringIO
+            fp = StringIO(body)
         environ = self._makeEnviron(kw)
-        return FieldStorage(fp=fp, environ=environ, keep_blank_values=1)
+        headers = {'content-length': "%d" % len(body), "content-type": ct}
+        return FieldStorage(fp=fp, environ=environ, keep_blank_values=1, headers=headers)
 
     def _getFields(self):
         from peppercorn import START, END, MAPPING, SEQUENCE

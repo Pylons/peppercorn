@@ -1,3 +1,12 @@
+import functools
+
+try:
+    next
+except NameError:
+    # for Python 2.4 & 2.5
+    def next(gen):
+        return gen.next()
+
 def data_type(value):
     if ':' in value:
         return [ x.strip() for x in value.rsplit(':', 1) ]
@@ -9,7 +18,7 @@ SEQUENCE = 'sequence'
 MAPPING = 'mapping'
 RENAME = 'rename'
 
-def stream(next, token):
+def stream(next_token_gen, token):
     """
     thanks to the effbot for
     http://effbot.org/zone/simple-iterator-parser.htm
@@ -25,12 +34,12 @@ def stream(next, token):
             else:
                 out = {}
                 add = out.__setitem__
-            token = next()
+            token = next_token_gen()
             op, data = token
             while op != END:
-                key, val = stream(next, token)
+                key, val = stream(next_token_gen, token)
                 add(key, val)
-                token = next()
+                token = next_token_gen()
                 op, data = token
             if typ == RENAME:
                 if out:
@@ -48,5 +57,5 @@ def parse(fields):
     return it."""
     fields = [(START, MAPPING)] + list(fields) + [(END,'')]
     src = iter(fields)
-    result = stream(src.next, src.next())[1]
+    result = stream(functools.partial(next, src), next(src))[1]
     return result
