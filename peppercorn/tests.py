@@ -146,6 +146,59 @@ class TestParse(unittest.TestCase):
         fields = [(START, 'x:' + MAPPING)] * depth + [(END, '')] * depth
         self.assertRaises(ParseError, self._callFUT, fields)
 
+    def test_spurios_initial_end(self):
+        from peppercorn import END
+        fields = [
+            (END, ''),
+            ('name', 'fred'),
+        ]
+        result = self._callFUT(fields)
+        self.assertEqual(result, {})
+
+    def test_spurious_intermediary_end(self):
+        from peppercorn import START, SEQUENCE, END
+        fields = [
+            (START, 'names:%s' % SEQUENCE),
+            ('foo', 'fred'),
+            (END, ''),
+            (END, ''),
+            ('bar', 'joe'),
+            ('year', '2012'),
+        ]
+        result = self._callFUT(fields)
+        self.assertEqual(result, {'names': ['fred']})
+
+    def test_spurious_nested_end(self):
+        from peppercorn import END
+        fields = self._getFields()
+        index = fields.index(('month', '12'))
+        self.assertEqual(index, 7)
+        fields.insert(7, (END, ''))
+        fields.insert(7, (END, ''))
+        fields.insert(7, (END, ''))
+        result = self._callFUT(fields)
+        expected = {
+            'series': {
+                'dates': [['10']],
+                'name': 'date series 1'},
+            'month': '12',
+            'year': '2008',
+            'name': 'project1',
+            'title': 'Cool project'}
+        self.assertEqual(result, expected)
+
+    def test_spurious_final_end(self):
+        from peppercorn import START, RENAME, END
+        fields = [
+            (START, 'names:%s' % RENAME),
+            ('foo', 'fred'),
+            ('bar', 'joe'),
+            (END, ''),
+            (END, ''),
+        ]
+        result = self._callFUT(fields)
+        self.assertEqual(result, {'names': 'fred'})
+
 
 def encode_multipart_formdata(fields):
     BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
