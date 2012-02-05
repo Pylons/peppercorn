@@ -85,12 +85,12 @@ class TestParse(unittest.TestCase):
         self._assertFieldsResult(result)
 
     def test_bad_start_marker(self):
-        from peppercorn import START
+        from peppercorn import START, ParseError
         fields = [
             (START, 'something:unknown'),
             ]
         
-        self.assertRaises(ValueError, self._callFUT, fields)
+        self.assertRaises(ParseError, self._callFUT, fields)
 
     def test_unnamed_start_marker(self):
         from peppercorn import START, END, MAPPING
@@ -129,7 +129,23 @@ class TestParse(unittest.TestCase):
 
         result = self._callFUT(fields)
         self.assertEqual(result, {'': {'name':''}})
-        
+
+    def test_unclosed_sequence(self):
+        from peppercorn import START, MAPPING, ParseError
+        fields = [
+            ('name', 'fred'),
+            (START, 'series:%s' % MAPPING),
+        ]
+        self.assertRaises(ParseError, self._callFUT, fields)
+
+    def test_deep_nesting(self):
+        import sys
+        from peppercorn import START, END, MAPPING, ParseError
+        depth = sys.getrecursionlimit()
+        # Create a valid input nested deeper than the recursion limit:
+        fields = [(START, 'x:' + MAPPING)] * depth + [(END, '')] * depth
+        self.assertRaises(ParseError, self._callFUT, fields)
+
 
 def encode_multipart_formdata(fields):
     BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'

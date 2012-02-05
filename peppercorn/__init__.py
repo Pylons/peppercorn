@@ -12,6 +12,13 @@ SEQUENCE = 'sequence'
 MAPPING = 'mapping'
 RENAME = 'rename'
 
+
+class ParseError(Exception):
+    """
+    An exception raised by :func:`parse` when the input is malformed.
+    """
+
+
 def stream(next_token_gen, token):
     """
     thanks to the effbot for
@@ -42,14 +49,22 @@ def stream(next_token_gen, token):
                     out = ''
             return name, out
         else:
-            raise ValueError('Unknown stream start marker %s' % repr(token))
+            raise ParseError('Unknown stream start marker %s' % repr(token))
     else:
         return op, data
 
 def parse(fields):
     """ Infer a data structure from the ordered set of fields and
-    return it."""
+    return it.
+
+    A :exc:`ParseError` is raised if a data structure can't be inferred.
+    """
     fields = [(START, MAPPING)] + list(fields) + [(END,'')]
     src = iter(fields)
-    result = stream(functools.partial(next, src), next(src))[1]
+    try:
+        result = stream(functools.partial(next, src), next(src))[1]
+    except StopIteration:
+        raise ParseError('Unclosed sequence')
+    except RuntimeError:
+        raise ParseError('Input too deeply nested')
     return result

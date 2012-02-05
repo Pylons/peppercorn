@@ -144,6 +144,22 @@ also be used as a source of information:
 
    peppercorn.parse(fields)
 
+It is possible to hand-craft input that cannot be parsed into a data
+structure.  In such cases :func:`peppercorn.parse` will raise
+:exc:`peppercorn.ParseError`:
+
+.. code-block:: python
+   :linenos:
+    fields = [
+        ('name', 'project1'),
+        ('__start__', 'bogus:marker'),
+        ('title', 'Cool project'),
+    ]
+    try:
+        pstruct = peppercorn.parse(fields)
+    except peppercorn.ParseError:
+        raise HTTPBadRequest()
+
 .. toctree::
    :maxdepth: 2
 

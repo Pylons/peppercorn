@@ -4,6 +4,8 @@ Changes
 Next release
 ------------
 
+- New exception type: ``ParseError``, raised when the input is malformed.
+
 - Peppercorn will no longer run under Python 2.4.  2.5 or better is required.
 
 - Python 3.2 compatibility.
