@@ -156,16 +156,15 @@ class TestParse(unittest.TestCase):
         self.assertTrue(deep_ok, 'deep nesting failed')
 
     def test_spurios_initial_end(self):
-        from peppercorn import END
+        from peppercorn import END, ParseError
         fields = [
             (END, ''),
             ('name', 'fred'),
         ]
-        result = self._callFUT(fields)
-        self.assertEqual(result, {})
+        self.assertRaises(ParseError, self._callFUT, fields)
 
     def test_spurious_intermediary_end(self):
-        from peppercorn import START, SEQUENCE, END
+        from peppercorn import START, SEQUENCE, END, ParseError
         fields = [
             (START, 'names:%s' % SEQUENCE),
             ('foo', 'fred'),
@@ -174,30 +173,20 @@ class TestParse(unittest.TestCase):
             ('bar', 'joe'),
             ('year', '2012'),
         ]
-        result = self._callFUT(fields)
-        self.assertEqual(result, {'names': ['fred']})
+        self.assertRaises(ParseError, self._callFUT, fields)
 
     def test_spurious_nested_end(self):
-        from peppercorn import END
+        from peppercorn import END, ParseError
         fields = self._getFields()
         index = fields.index(('month', '12'))
         self.assertEqual(index, 7)
         fields.insert(7, (END, ''))
         fields.insert(7, (END, ''))
         fields.insert(7, (END, ''))
-        result = self._callFUT(fields)
-        expected = {
-            'series': {
-                'dates': [['10']],
-                'name': 'date series 1'},
-            'month': '12',
-            'year': '2008',
-            'name': 'project1',
-            'title': 'Cool project'}
-        self.assertEqual(result, expected)
+        self.assertRaises(ParseError, self._callFUT, fields)
 
     def test_spurious_final_end(self):
-        from peppercorn import START, RENAME, END
+        from peppercorn import START, RENAME, END, ParseError
         fields = [
             (START, 'names:%s' % RENAME),
             ('foo', 'fred'),
@@ -205,8 +194,7 @@ class TestParse(unittest.TestCase):
             (END, ''),
             (END, ''),
         ]
-        result = self._callFUT(fields)
-        self.assertEqual(result, {'names': 'fred'})
+        self.assertRaises(ParseError, self._callFUT, fields)
 
 
 def encode_multipart_formdata(fields):

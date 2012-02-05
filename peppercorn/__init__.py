@@ -61,24 +61,26 @@ def parse(fields):
             # Make future calls to `add_item` work on this collection:
             stack.append(collection)
         elif op == END:
-            if len(stack):
-                # Replace all instances of RenameList with their first item.
-                collection = stack[-1]
-                if isinstance(collection, dict):
-                    items = collection.items()
-                else:
-                    items = enumerate(collection)
-                rename_info = []
-                for key, value in items:
-                    if isinstance(value, RenameList):
-                        rename_info.append((key, value[0] if value else ''))
-                for key, value in rename_info:
-                    collection[key] = value
-
-                if len(stack) > 1:
-                    stack.pop()
-                else:
-                    break
+            # A start marker should have been encountered by now.
+            # Each start marker grows the stack.
+            # If this is not the case, then the end marker is illegal.
+            if len(stack) < 2:
+                raise ParseError('Spurious stream end marker')
+            collection = stack.pop()
+            # Replace all instances of RenameList with their first item.
+            # Note that the stack still contains a reference to the same
+            # collection object, so the value present in the stack is
+            # updated by mutating this collection.
+            if isinstance(collection, dict):
+                items = collection.items()
+            else:
+                items = enumerate(collection)
+            rename_info = []
+            for key, value in items:
+                if isinstance(value, RenameList):
+                    rename_info.append((key, value[0] if value else ''))
+            for key, value in rename_info:
+                collection[key] = value
         else:
             add_item(op, data)
 
