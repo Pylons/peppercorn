@@ -30,7 +30,7 @@ requires = []
 
 setup(
     name='peppercorn',
-    version='0.3',
+    version='0.4',
     description=('A library for converting a token stream into a data '
                  'structure for use in web form posts'),
     long_description=README + '\n\n' +  CHANGES,
