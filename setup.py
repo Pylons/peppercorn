@@ -50,7 +50,7 @@ setup(
     keywords='web wsgi form generation library',
     author="Agendaless Consulting",
     author_email="pylons-discuss@googlegroups.com",
-    url="http://pylonsproject.org",
+    url="http://docs.pylonsproject.org/projects/peppercorn/en/latest/",
     license="BSD-derived (http://www.repoze.org/LICENSE.txt)",
     packages=find_packages(),
     include_package_data=True,
