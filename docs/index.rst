@@ -109,10 +109,10 @@ token stream:
      <input name="day"/>
      <input name="month"/>
      <input name="year"/>
-     <input type="__hidden__" name="__start__" value="sex:rename"/>
+     <input type="hidden" name="__start__" value="sex:rename"/>
      <input type="radio" name="sex1" value="male"/>
      <input type="radio" name="sex1" value="female"/>
-     <input type="__hidden__" name="__end__"/>
+     <input type="hidden" name="__end__"/>
      <input type="hidden" name="__end__"/>
      <input type="hidden" name="__end__"/>
      <input type="hidden" name="__end__"/>
