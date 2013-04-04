@@ -27,6 +27,9 @@ Example "bare" usage:
   ... ('year', '2009'),
   ... ('__end__', 'date:sequence'),
   ... ('__end__', 'dates:sequence'),
+  ... ('__start__', ':ignore'),
+  ... ('selectall', ''),
+  ... ('__end__', ''),
   ... ('__end__', 'series:mapping'),
   ... ]
    >>> from peppercorn import parse
@@ -39,7 +42,7 @@ Example "bare" usage:
 
 A ``__start__`` token pushes a data structure onto the stack.  Its
 value is composed of a name and a type, separated by a colon
-(e.g. ``date:sequence``).  Three ``__start__`` token types exist:
+(e.g. ``date:sequence``).  Four ``__start__`` token types exist:
 
 - ``sequence``: begins a sequence.  Subsequent data elements will be
   added as positional elements in the sequence.
@@ -48,7 +51,7 @@ value is composed of a name and a type, separated by a colon
   added as key/value pairs in the mapping.
 
 - ``rename``: begins a special mode.  The value of the first
-  subsequent data element in the stream will be used within it's
+  subsequent data element in the stream will be used within its
   parent sequence or mapping; any remaining data elements until the
   corresponding ``__end__`` marker are ignored.
 
@@ -73,6 +76,11 @@ value is composed of a name and a type, separated by a colon
   want the selected value back in the pstruct to be recorded under a
   well-known name.  This name will be the name of the ``rename`` token
   surrounding some radio controls.
+
+- ``ignore``: The subsequent data elements will be ignored (not added
+  to the mapping or sequence) until the next ``__end__`` token. Useful
+  when forms include a field designed for client side scripting, such
+  as a "select all" checkbox in the middle of a series of checkboxes.
 
 ``__start__`` markers can be unnamed; they are unnamed when their
 value does not contain a colon.  For example, the start marker
