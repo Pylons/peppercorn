@@ -1,6 +1,17 @@
 Changes
 =======
 
+0.5 (Unreleased)
+----------------
+
+- Switched to an iterative parser rather than a recursive parser to avoid
+  DoS attacks.
+
+- Added the ``ignore`` operation. The subsequent data elements in the stream
+  will be ignored until the corresponding ``__end__`` marker. This useful for
+  form elements designed for client-side scripting, such as a "select all"
+  checkbox in the middle of a list of other kinds of fields.
+
 0.4 (2012-02-14)
 ----------------
 

@@ -129,7 +129,43 @@ class TestParse(unittest.TestCase):
 
         result = self._callFUT(fields)
         self.assertEqual(result, {'': {'name':''}})
-        
+
+    def test_ignore(self):
+        from peppercorn import START, END, IGNORE, MAPPING
+        fields = [
+            (START, MAPPING),
+            ('name1', 'fred'),
+            (START, 'whatever:' + IGNORE),
+            ('name2', 'barney'),
+            (END, ''),
+            ('name3', 'wilma'),
+            (END, ''),
+        ]
+
+        result = self._callFUT(fields)
+        self.assertEqual(result, {'': {'name1':'fred', 'name3': 'wilma'}})
+
+    def test_excessive_end_markers(self):
+        from peppercorn import START, END, MAPPING
+        fields = [
+            (START, MAPPING),
+            ('name1', 'fred'),
+            (END, ''),
+            (END, ''),
+        ]
+
+        self.assertRaises(ValueError, self._callFUT, fields)
+
+    def test_insufficient_end_markers(self):
+        from peppercorn import START, END, MAPPING
+        fields = [
+            (START, MAPPING),
+            ('name1', 'fred'),
+        ]
+
+        self.assertRaises(ValueError, self._callFUT, fields)
+
+
 
 def encode_multipart_formdata(fields):
     BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
