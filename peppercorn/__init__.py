@@ -37,11 +37,11 @@ def parse(tokens):
             elif typ == RENAME:
                 parsed = out[0][1] if out else ''
             elif typ == IGNORE:
-                pass
+                parsed = None
             else:
                 raise ValueError("Too many end markers")
             prev_target, prev_typ, out = stack.pop()
-            if typ != IGNORE:
+            if parsed is not None:
                 out.append((target, parsed))
             target = prev_target
             typ = prev_typ
