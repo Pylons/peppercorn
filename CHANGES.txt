@@ -1,6 +1,11 @@
 Changes
 =======
 
+0.5 (unreleased)
+----------------
+
+- Drop support for Python 2.5 / Jython.
+
 0.4 (2012-02-14)
 ----------------
 
