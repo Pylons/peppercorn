@@ -1,5 +1,3 @@
-import functools
-from peppercorn.compat import next
 
 def data_type(value):
     if ':' in value:
@@ -11,45 +9,46 @@ END = '__end__'
 SEQUENCE = 'sequence'
 MAPPING = 'mapping'
 RENAME = 'rename'
+IGNORE = 'ignore'
+TYPS = (SEQUENCE, MAPPING, RENAME, IGNORE)
 
-def stream(next_token_gen, token):
-    """
-    thanks to the effbot for
-    http://effbot.org/zone/simple-iterator-parser.htm
-    """
-    op, data = token
-    if op == START:
-        name, typ = data_type(data)
-        out = []
-        if typ in (SEQUENCE, MAPPING, RENAME):
-            if typ in (SEQUENCE, RENAME):
-                out = []
-                add = lambda x, y: out.append(y)
-            else:
-                out = {}
-                add = out.__setitem__
-            token = next_token_gen()
-            op, data = token
-            while op != END:
-                key, val = stream(next_token_gen, token)
-                add(key, val)
-                token = next_token_gen()
-                op, data = token
-            if typ == RENAME:
-                if out:
-                    out = out[0]
-                else:
-                    out = ''
-            return name, out
-        else:
-            raise ValueError('Unknown stream start marker %s' % repr(token))
-    else:
-        return op, data
 
-def parse(fields):
+def parse(tokens):
     """ Infer a data structure from the ordered set of fields and
     return it."""
-    fields = [(START, MAPPING)] + list(fields) + [(END,'')]
-    src = iter(fields)
-    result = stream(functools.partial(next, src), next(src))[1]
-    return result
+    target = typ = None
+    out = []    # [(key, value)]
+    stack = []  # [(target, typ, out)]
+
+    for token in tokens:
+        key, val = token
+        if key == START:
+            stack.append((target, typ, out))
+            target, typ = data_type(val)
+            if typ in TYPS:
+                out = []
+            else:
+                raise ValueError("Unknown start marker %s" % repr(token))
+        elif key == END:
+            if typ == SEQUENCE:
+                parsed = [v for (k, v) in out]
+            elif typ == MAPPING:
+                parsed = dict(out)
+            elif typ == RENAME:
+                parsed = out[0][1] if out else ''
+            elif typ == IGNORE:
+                parsed = None
+            else:
+                raise ValueError("Too many end markers")
+            prev_target, prev_typ, out = stack.pop()
+            if parsed is not None:
+                out.append((target, parsed))
+            target = prev_target
+            typ = prev_typ
+        else:
+            out.append(token)
+
+    if stack:
+        raise ValueError("Not enough end markers")
+
+    return dict(out)

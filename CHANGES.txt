@@ -4,6 +4,14 @@ Changes
 0.5 (unreleased)
 ----------------
 
+- Switch to an iterative parser rather than a recursive parser to avoid
+  DoS attacks.
+
+- Add the ``ignore`` operation. The subsequent data elements in the stream
+  will be ignored until the corresponding ``__end__`` marker.  This feature
+  is useful for form elements designed for client-side scripting, such as a
+  "select all" checkbox in the middle of a list of other kinds of fields.
+
 - Add support for Python 3.3.
 
 - Drop support for Python 2.5 / Jython.
