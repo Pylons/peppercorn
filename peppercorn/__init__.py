@@ -1,55 +1,90 @@
-import functools
-from peppercorn.compat import next
-
-def data_type(value):
-    if ':' in value:
-        return [ x.strip() for x in value.rsplit(':', 1) ]
-    return ('', value.strip())
-
 START = '__start__'
 END = '__end__'
 SEQUENCE = 'sequence'
 MAPPING = 'mapping'
 RENAME = 'rename'
 
-def stream(next_token_gen, token):
+
+class ParseError(Exception):
     """
-    thanks to the effbot for
-    http://effbot.org/zone/simple-iterator-parser.htm
+    An exception raised when the input is malformed.
     """
-    op, data = token
-    if op == START:
-        name, typ = data_type(data)
-        out = []
-        if typ in (SEQUENCE, MAPPING, RENAME):
-            if typ in (SEQUENCE, RENAME):
-                out = []
-                add = lambda x, y: out.append(y)
-            else:
-                out = {}
-                add = out.__setitem__
-            token = next_token_gen()
-            op, data = token
-            while op != END:
-                key, val = stream(next_token_gen, token)
-                add(key, val)
-                token = next_token_gen()
-                op, data = token
-            if typ == RENAME:
-                if out:
-                    out = out[0]
-                else:
-                    out = ''
-            return name, out
-        else:
-            raise ValueError('Unknown stream start marker %s' % repr(token))
+
+
+class RenameList(list): pass
+
+
+_COLLECTION_TYPES = {
+    SEQUENCE: list,
+    MAPPING: dict,
+    RENAME: RenameList,
+}
+
+
+def data_type(marker):
+    """Extract the name and the data type from a start marker.
+
+    Return the name and a collection instance.
+    """
+    if ':' in marker:
+        name, typ = [ x.strip() for x in marker.rsplit(':', 1) ]
     else:
-        return op, data
+        name = ''
+        typ = marker.strip()
+    try:
+        collection = _COLLECTION_TYPES[typ]()
+    except KeyError:
+        raise ParseError('Unknown stream start marker %s' % marker)
+    return name, collection
+
 
 def parse(fields):
     """ Infer a data structure from the ordered set of fields and
-    return it."""
-    fields = [(START, MAPPING)] + list(fields) + [(END,'')]
-    src = iter(fields)
-    result = stream(functools.partial(next, src), next(src))[1]
-    return result
+    return it.
+
+    A :exc:`ParseError` is raised if a data structure can't be inferred.
+    """
+    stack = [{}]
+
+    def add_item(name, value):
+        """Add an item to the last collection in the stack"""
+        current = stack[-1]
+        if isinstance(current, dict):
+            current[name] = value
+        else:
+            current.append(value)
+
+    for op, data in fields:
+        if op == START:
+            name, collection = data_type(data)
+            add_item(name, collection)
+            # Make future calls to `add_item` work on this collection:
+            stack.append(collection)
+        elif op == END:
+            # A start marker should have been encountered by now.
+            # Each start marker grows the stack.
+            # If this is not the case, then the end marker is illegal.
+            if len(stack) < 2:
+                raise ParseError('Spurious stream end marker')
+            collection = stack.pop()
+            # Replace all instances of RenameList with their first item.
+            # Note that the stack still contains a reference to the same
+            # collection object, so the value present in the stack is
+            # updated by mutating this collection.
+            if isinstance(collection, dict):
+                items = collection.items()
+            else:
+                items = enumerate(collection)
+            rename_info = []
+            for key, value in items:
+                if isinstance(value, RenameList):
+                    rename_info.append((key, value[0] if value else ''))
+            for key, value in rename_info:
+                collection[key] = value
+        else:
+            add_item(op, data)
+
+    if len(stack) > 1:
+        raise ParseError('Unclosed sequence')
+
+    return stack[0]

@@ -85,12 +85,12 @@ class TestParse(unittest.TestCase):
         self._assertFieldsResult(result)
 
     def test_bad_start_marker(self):
-        from peppercorn import START
+        from peppercorn import START, ParseError
         fields = [
             (START, 'something:unknown'),
             ]
         
-        self.assertRaises(ValueError, self._callFUT, fields)
+        self.assertRaises(ParseError, self._callFUT, fields)
 
     def test_unnamed_start_marker(self):
         from peppercorn import START, END, MAPPING
@@ -129,7 +129,73 @@ class TestParse(unittest.TestCase):
 
         result = self._callFUT(fields)
         self.assertEqual(result, {'': {'name':''}})
-        
+
+    def test_unclosed_sequence(self):
+        from peppercorn import START, MAPPING, ParseError
+        fields = [
+            ('name', 'fred'),
+            (START, 'series:%s' % MAPPING),
+        ]
+        self.assertRaises(ParseError, self._callFUT, fields)
+
+    def test_deep_nesting(self):
+        import sys
+        from peppercorn import START, END, MAPPING
+        depth = sys.getrecursionlimit()
+        # Create a valid input nested deeper than the recursion limit:
+        fields = [(START, 'x:' + MAPPING)] * depth + [(END, '')] * depth
+        result = self._callFUT(fields)
+
+        temp = data = {}
+        for _ in range(depth):
+            temp['x'] = temp = {}
+
+        # Don't do self.assertEqual(result, data) here as
+        # this will exceed the recursion limit:
+        deep_ok = repr(result) == repr(data)
+        self.assertTrue(deep_ok, 'deep nesting failed')
+
+    def test_spurios_initial_end(self):
+        from peppercorn import END, ParseError
+        fields = [
+            (END, ''),
+            ('name', 'fred'),
+        ]
+        self.assertRaises(ParseError, self._callFUT, fields)
+
+    def test_spurious_intermediary_end(self):
+        from peppercorn import START, SEQUENCE, END, ParseError
+        fields = [
+            (START, 'names:%s' % SEQUENCE),
+            ('foo', 'fred'),
+            (END, ''),
+            (END, ''),
+            ('bar', 'joe'),
+            ('year', '2012'),
+        ]
+        self.assertRaises(ParseError, self._callFUT, fields)
+
+    def test_spurious_nested_end(self):
+        from peppercorn import END, ParseError
+        fields = self._getFields()
+        index = fields.index(('month', '12'))
+        self.assertEqual(index, 7)
+        fields.insert(7, (END, ''))
+        fields.insert(7, (END, ''))
+        fields.insert(7, (END, ''))
+        self.assertRaises(ParseError, self._callFUT, fields)
+
+    def test_spurious_final_end(self):
+        from peppercorn import START, RENAME, END, ParseError
+        fields = [
+            (START, 'names:%s' % RENAME),
+            ('foo', 'fred'),
+            ('bar', 'joe'),
+            (END, ''),
+            (END, ''),
+        ]
+        self.assertRaises(ParseError, self._callFUT, fields)
+
 
 def encode_multipart_formdata(fields):
     BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
