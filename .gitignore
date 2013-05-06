@@ -21,3 +21,4 @@ dist/
 peppercorn/coverage.xml
 docs/_build
 docs/_themes
+coverage.xml
