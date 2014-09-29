@@ -1,7 +1,7 @@
 Changes
 =======
 
-0.5 (unreleased)
+0.5 (2014-09-29)
 ----------------
 
 - Switch to an iterative parser rather than a recursive parser to avoid
