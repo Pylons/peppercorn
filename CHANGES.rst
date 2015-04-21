@@ -1,6 +1,11 @@
 Changes
 =======
 
+0.6 (unreleased)
+----------------
+
+- Add support for Python 3.4.
+
 0.5 (2014-09-29)
 ----------------
 

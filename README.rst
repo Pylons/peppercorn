@@ -3,8 +3,8 @@ Peppercorn
 
 A library for converting a token stream into a data structure comprised of
 sequences, mappings, and scalars, developed primarily for converting HTTP form
-post data into a richer data structure.  It runs on Python 2.6, 2.7, 3.2, and
-3.3.
+post data into a richer data structure.  It runs on Python 2.6, 2.7, 3.2,
+3.3, and 3.4.
 
 Please see http://docs.pylonsproject.org/projects/peppercorn/en/latest/
 for the documentation.
