@@ -4,7 +4,10 @@ Changes
 0.6 (unreleased)
 ----------------
 
-- Add support for Python 3.4.
+- Add support for Python 3.4, 3.5, 3.6 and 3.7.
+
+- Drop support for Python 2.6, 3.2 and 3.3.
+
 
 0.5 (2014-09-29)
 ----------------
