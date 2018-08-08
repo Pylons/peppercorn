@@ -107,3 +107,4 @@ Contributors
 - Shane Hathaway, 2013/04/13
 - Tim Tisdall, 2015/04/21
 - Steffen Allner, 2018/08/14
+- Steve Piercy, 2018/08/08
