@@ -28,6 +28,11 @@ except:
 
 requires = []
 
+docs_extras = [
+    'Sphinx >= 1.7.6',
+    'pylons-sphinx-themes',
+]
+
 setup(
     name='peppercorn',
     version='0.5',
@@ -59,6 +64,9 @@ setup(
     zip_safe=False,
     tests_require = requires,
     install_requires = requires,
+    extras_require={
+        'docs': docs_extras,
+    },
     test_suite="peppercorn",
     )
 
