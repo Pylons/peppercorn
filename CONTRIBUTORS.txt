@@ -106,3 +106,4 @@ Contributors
 - Valentin Ungureanu, 2012/02/06
 - Shane Hathaway, 2013/04/13
 - Tim Tisdall, 2015/04/21
+- Steffen Allner, 2018/08/14
