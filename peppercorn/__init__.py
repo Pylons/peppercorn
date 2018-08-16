@@ -1,8 +1,4 @@
-
-def data_type(value):
-    if ':' in value:
-        return [ x.strip() for x in value.rsplit(':', 1) ]
-    return ('', value.strip())
+import collections
 
 START = '__start__'
 END = '__end__'
@@ -13,9 +9,14 @@ IGNORE = 'ignore'
 TYPS = (SEQUENCE, MAPPING, RENAME, IGNORE)
 
 
+def data_type(value):
+    if ':' in value:
+        return [ x.strip() for x in value.rsplit(':', 1) ]
+    return ('', value.strip())
+
+
 def parse(tokens):
-    """ Infer a data structure from the ordered set of fields and
-    return it."""
+    """ Return a data structure inferred from an ordered set of fields."""
     target = typ = None
     out = []    # [(key, value)]
     stack = []  # [(target, typ, out)]
@@ -33,7 +34,7 @@ def parse(tokens):
             if typ == SEQUENCE:
                 parsed = [v for (k, v) in out]
             elif typ == MAPPING:
-                parsed = dict(out)
+                parsed = collections.OrderedDict(out)
             elif typ == RENAME:
                 parsed = out[0][1] if out else ''
             elif typ == IGNORE:
@@ -51,4 +52,4 @@ def parse(tokens):
     if stack:
         raise ValueError("Not enough end markers")
 
-    return dict(out)
+    return collections.OrderedDict(out)
