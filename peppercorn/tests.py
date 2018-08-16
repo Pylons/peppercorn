@@ -59,15 +59,21 @@ class TestParse(unittest.TestCase):
         return fields
 
     def _assertFieldsResult(self, result):
-        self.assertEqual(
-            result,
-            {'series':
-             {'name':'date series 1',
-              'dates': [['10', '12', '2008'],
-                        ['10', '12', '2009']],
-              },
-             'name': 'project1',
-             'title': 'Cool project'})
+        import collections
+
+        sub = collections.OrderedDict()
+        sub['name'] ='date series 1'
+        sub['dates'] =[
+            ['10', '12', '2008'],
+            ['10', '12', '2009'],
+        ]
+
+        expected = collections.OrderedDict()
+        expected['name'] = 'project1'
+        expected['title'] = 'Cool project'
+        expected['series'] = sub
+
+        self.assertEqual(result, expected)
 
     def test_bare(self):
         fields = self._getFields()

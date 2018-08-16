@@ -11,6 +11,8 @@ Changes
 - Add contributing.md and update docs. See
   https://github.com/Pylons/peppercorn/issues/13
 
+- Preserve ordering of mapping fields using ``collections.OrderedDict``. See
+  https://github.com/Pylons/peppercorn/issues/11
 
 0.5 (2014-09-29)
 ----------------
