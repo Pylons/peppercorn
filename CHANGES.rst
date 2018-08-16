@@ -8,6 +8,9 @@ Changes
 
 - Drop support for Python 2.6, 3.2 and 3.3.
 
+- Add contributing.md and update docs. See
+  https://github.com/Pylons/peppercorn/issues/13
+
 
 0.5 (2014-09-29)
 ----------------
