@@ -1,0 +1,147 @@
+Releasing
+=========
+
+- For clarity, we define releases as follows.
+
+  - Alpha, beta, dev and similar statuses do not qualify whether a release is
+    major or minor. The term "pre-release" means alpha, beta, or dev.
+
+  - A release is final when it is no longer pre-release.
+
+  - A *major* release is where the first number either before or after the
+    first dot increases. Examples: 1.6 to 1.7a1, or 1.8 to 2.0.
+
+  - A *minor* or *bug fix* release is where the number after the second dot
+    increases. Example: 1.6 to 1.6.1.
+
+
+Prepare new release branch via a pull request
+---------------------------------------------
+
+- Consider the release number (bugfix-only vs. features, changes in platforms).
+
+- Synch the local repository with the ``master`` branch::
+
+  $ git checkout master
+  $ git fetch --all
+  $ git merge upstream/master
+
+- Tests will run when the PR is submitted. Optionally run tests locally first.
+
+  - Do platform test via tox::
+
+    $ tox -r
+
+    Make sure statement coverage is at 100% (the test run will fail if not).
+
+  - Run tests on Windows if feasible.
+
+- Create a new release branch, incrementing the version number::
+
+  $ git checkout -b prep-<#.#.#>-release
+
+- Ensure all features of the release are documented (audit ``CHANGES.rst`` or
+  communicate with contributors, checking against recent merged pull requests).
+
+- Add date and new release number to ``CHANGES.rst`` heading.
+
+- Normalize changelog if needed (imperative voice, spacing, etc.).
+
+- Update the release number in ``setup.py``.
+
+- Make sure PyPI long description renders (requires ``readme_renderer``
+  installed into your Python)::
+
+  $ python setup.py check -r -s -m
+
+- Use "standard" commit message for the pull request::
+
+  $ git commit . -m "Prep #.#.# release."
+  $ git push upstream prep-#.#.#-release
+
+- Submit the pull request via GitHub.
+
+
+Make the release
+----------------
+
+- Once the pull request passes all checks from continuous integration, and the
+  pull request is approved, merge it.
+
+- Synch the local repository with the ``master`` branch::
+
+  $ git checkout master
+  $ git fetch --all
+  $ git merge upstream/master
+
+- Create a release tag with a "standard" commit message::
+
+  $ git commit . -m "Tag #.#.# release."
+
+- Push the tag to upstream.
+
+  $ git push --tags upstream
+
+- Make sure your Python has ``setuptools-git``, ``twine``, and ``wheel``
+  installed. Make the release files, and push the release to PyPI::
+
+  $ python setup.py sdist bdist_wheel
+  $ twine upload dist/*
+
+
+Prepare master for further development after the release
+--------------------------------------------------------
+
+- Synch the local repository with the ``master`` branch::
+
+  $ git checkout master
+  $ git fetch --all
+  $ git merge upstream/master
+
+- In CHANGES.rst, add heading "unreleased" for the version number, and push to
+  upstream.
+
+  $ git commit . -m "back to work"
+  $ git push upstream
+
+
+Marketing and communications
+----------------------------
+
+- Announce to Twitter.
+
+```
+Peppercorn x.x.x released.
+
+PyPI
+https://pypi.org/project/peppercorn/x.x.x/
+
+Changes
+https://docs.pylonsproject.org/projects/peppercorn/en/latest/changes.html#version-yyyy-mm-dd
+
+Issues
+https://github.com/Pylons/peppercorn/issues
+```
+
+- Announce to maillist.
+
+```
+Peppercorn x.x.x has been released.
+
+The full changelog is here:
+https://docs.pylonsproject.org/projects/peppercorn/en/latest/changes.html
+
+x.x.x documentation:
+https://docs.pylonsproject.org/projects/peppercorn/en/latest/
+
+You can install it via PyPI:
+
+  pip install peppercorn==x.x.x
+
+Enjoy, and please report any issues you find to the issue tracker at
+https://github.com/Pylons/peppercorn/issues
+
+Thanks!
+
+- Peppercorn core developers
+```
