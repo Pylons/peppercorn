@@ -20,7 +20,9 @@ Prepare new release branch via a pull request
 
 - Consider the release number (bugfix-only vs. features, changes in platforms).
 
-- Synch the local repository with the ``master`` branch::
+- Synch the local repository with the ``master`` branch from ``upstream``,
+  where ``upstream`` is the repository ``Pylons/peppercorn``, not the
+  developer's own fork::
 
   $ git checkout master
   $ git fetch --all
