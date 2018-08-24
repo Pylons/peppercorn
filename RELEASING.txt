@@ -78,7 +78,7 @@ Make the release
 
 - Create a release tag with a "standard" commit message::
 
-  $ git commit . -m "Tag #.#.# release."
+  $ git tag -a #.#.# -m "Tag #.#.# release"
 
 - Push the tag to upstream.
 
