@@ -1,7 +1,7 @@
 Changes
 =======
 
-0.6 (unreleased)
+0.6 (2018-08-22)
 ----------------
 
 - Add support for Python 3.4, 3.5, 3.6 and 3.7.
@@ -25,37 +25,42 @@ Changes
 
 - Add support for Python 3.3.
 
-- Drop support for Python 2.5 / Jython.
+- Drop support for Python 2.5 and Jython.
+
 
 0.4 (2012-02-14)
 ----------------
 
-- Peppercorn will no longer run under Python 2.4.  2.5 or better is required.
+- Drop support for Python 2.4.
 
-- Python 3.2 compatibility.
+- Add support for Python 3.2.
 
-- Moved to GitHub.
+- Move project to GitHub.
 
-- Pylons project docs theme.
+- Switch to Pylons Project Sphinx theme.
 
-- Added tox configuration.
+- Add tox configuration.
+
 
 0.3 (2010-09-02)
 ----------------
 
-- 0.2 was a brownbag release; a case was not handled where ``rename``
-  operation types may not have children.  This release fixes that.
+- 0.2 was a brownbag release. Handle the case where ``rename`` operation types
+  may not have children.
+
 
 0.2 (2010-09-02)
 ----------------
 
-- New operation type: ``rename``.  ``rename`` begins a special mode.
+- Add new operation type: ``rename``.  ``rename`` begins a special mode.
   The value of the first subsequent data element in the stream will be
-  used within it's parent sequence or mapping; any remaining data
+  used within its parent sequence or mapping. Any remaining data
   elements until the corresponding ``__end__`` marker are ignored.
   This is mostly in support of radio buttons.  See the ``rename`` docs
-  within `http://docs.repoze.org/peppercorn
-  <http://docs.repoze.org/peppercorn>`_ for more information.
+  within `https://docs.pylonsproject.org/projects/peppercorn/en/latest/
+  <https://docs.pylonsproject.org/projects/peppercorn/en/latest/>`_ for more
+  information.
+
 
 0.1 (2010-03-23)
 ----------------
