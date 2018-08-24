@@ -12,8 +12,9 @@
 # All configuration values have a default value; values that are commented
 # out serve to show the default value.
 
-import pylons_sphinx_themes
 import datetime
+import pkg_resources
+import pylons_sphinx_themes
 
 
 html_theme_path = pylons_sphinx_themes.get_html_themes_path()
@@ -56,7 +57,7 @@ copyright = '2011-%s, Agendaless Consulting ' \
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '0.5'
+version = pkg_resources.get_distribution('peppercorn').version
 # The full version, including alpha/beta/rc tags.
 release = version
 
