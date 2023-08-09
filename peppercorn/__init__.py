@@ -13,7 +13,7 @@ IGNORE = 'ignore'
 TYPS = (SEQUENCE, MAPPING, RENAME, IGNORE)
 
 
-def parse(tokens):
+def parse(tokens, unique_key_separator=None):
     """ Infer a data structure from the ordered set of fields and
     return it."""
     target = typ = None
@@ -22,6 +22,9 @@ def parse(tokens):
 
     for token in tokens:
         key, val = token
+        if unique_key_separator:
+            key = key.rsplit(unique_key_separator, maxsplit=1)[0]
+
         if key == START:
             stack.append((target, typ, out))
             target, typ = data_type(val)
@@ -46,7 +49,7 @@ def parse(tokens):
             target = prev_target
             typ = prev_typ
         else:
-            out.append(token)
+            out.append((key, val))
 
     if stack:
         raise ValueError("Not enough end markers")

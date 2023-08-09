@@ -2,9 +2,9 @@ import unittest
 from peppercorn.compat import PY3
 
 class TestParse(unittest.TestCase):
-    def _callFUT(self, fields):
+    def _callFUT(self, fields, **kw):
         from peppercorn import parse
-        return parse(fields)
+        return parse(fields, **kw)
         
     def _makeEnviron(self, kw=None):
         if kw is None: # pragma: no cover
@@ -73,7 +73,43 @@ class TestParse(unittest.TestCase):
         fields = self._getFields()
         result = self._callFUT(fields)
         self._assertFieldsResult(result)
-        
+
+    def test_bare_with_marker(self):
+        i = 0
+        def next_id():
+            nonlocal i
+            i += 1
+            return str(i)
+        fields = [
+            (key + ":" + next_id(), value)
+            for key, value in self._getFields()]
+        result = self._callFUT(fields, unique_key_separator=":")
+        self._assertFieldsResult(result)
+
+    def test_bare_without_marker(self):
+        # This is proof that ":" isn't something special when we don't
+        # provide a unique key separator
+
+        from peppercorn import START, END, MAPPING
+
+        fields = []
+        for key, value in self._getFields():
+            if key not in [START, END]:
+                key = key + ":something"
+            fields.append((key, value))
+
+        result = self._callFUT(fields)
+
+        self.assertEqual(
+            result,
+            {'series':
+             {'name:something':'date series 1',
+              'dates': [['10', '12', '2008'],
+                        ['10', '12', '2009']],
+              },
+             'name:something': 'project1',
+             'title:something': 'Cool project'})
+
     def test_fieldstorage(self):
         fs = self._makeMultipartFieldStorage(self._getFields())
 
