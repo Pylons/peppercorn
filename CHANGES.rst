@@ -1,6 +1,35 @@
 Changes
 =======
 
+0.7 (unreleased)
+----------------
+
+- Provide a compatibility option for clients that do not implement the "list of
+  tuples" processing according to the HTML spec's "Constructing the form data
+  set" algorithm.
+
+  To help those clients you can suffix each field name with a unique marker
+  so that they will properly preserver order and thus emulate the 
+  "list of tuples" behaviour. 
+
+  If your application relies on this, then provide the ``unique_key_separator``
+  argument to the parse function ``parse(fields, unique_key_separator=":"")`` and
+  suffix the input field names accordingly. The actual IDs do not matter,
+  as long as the combination of field name + id ends up as unique. :
+
+    <input type="hidden" name="__start__:1234" value="series:sequence"/>
+    <input type="hidden" name="name:1234" value="Bob" />
+    <input type="hidden" name="__end__:1234" />
+
+    <input type="hidden" name="__start__:1235" value="series:sequence"/>
+    <input type="hidden" name="name:1235" value="Ken" />
+    <input type="hidden" name="__end__:1235" />
+
+  For readability you can reuse the same ID on start/end markers, but they could
+  also be different and don't have to be numbers, UUIDs would work as well but
+  will increase payload size.
+
+
 0.6 (2018-08-24)
 ----------------
 
