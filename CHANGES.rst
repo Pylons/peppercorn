@@ -4,6 +4,8 @@ Changes
 0.7 (unreleased)
 ----------------
 
+- Add Github workflow CI.
+
 - Update distribution packaging (``pyproject.toml``).
 
 - Update test runner to ``pytest``.
