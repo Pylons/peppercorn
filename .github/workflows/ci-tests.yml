@@ -31,7 +31,6 @@ jobs:
           - os: "ubuntu-latest"
             py: "pypy-3.7"
             pytest-args: ""
-        exclude:
     name: "Python: ${{ matrix.py }}-${{ matrix.architecture }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     steps:
