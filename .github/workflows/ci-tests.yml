@@ -40,9 +40,8 @@ jobs:
       with:
           python-version: ${{ matrix.py }}
           architecture: ${{ matrix.architecture }}
-    - run: |
-        pip install --upgrade setuptools pip
-        pip install tox
+    - run: pip install --upgrade setuptools pip
+    - run: pip install tox
     - name: Running tox
       run: tox -e py -- ${{ matrix.pytest-args }}
   coverage:
@@ -55,8 +54,8 @@ jobs:
       with:
         python-version: 3.12
         architecture: x64
+    - run: pip install --upgrade setuptools pip
     - run: |
-        pip install --upgrade setuptools pip
         pip install tox
         tox -e py312-cover,coverage
   docs:
@@ -69,7 +68,7 @@ jobs:
       with:
         python-version: 3.12
         architecture: x64
+    - run: pip install --upgrade setuptools pip
     - run: |
-        pip install --upgrade setuptools pip
         pip install tox
         tox -e docs
