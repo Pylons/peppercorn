@@ -32,7 +32,7 @@ class NotEnoughEndMarkers(ValueError):
         super().__init__("Not enough end markers")
 
 
-def parse(tokens):
+def parse(tokens, unique_key_separator=None):
     """ Infer a data structure from the ordered set of fields and
     return it."""
     target = typ = None
@@ -41,14 +41,21 @@ def parse(tokens):
 
     for token in tokens:
         key, val = token
+
+        if unique_key_separator:
+            key = key.rsplit(unique_key_separator, maxsplit=1)[0]
+
         if key == START:
             stack.append((target, typ, out))
             target, typ = data_type(val)
+
             if typ in TYPS:
                 out = []
             else:
                 raise UnknownStartMarker(token)
+
         elif key == END:
+
             if typ == SEQUENCE:
                 parsed = [v for (k, v) in out]
             elif typ == MAPPING:
@@ -59,13 +66,15 @@ def parse(tokens):
                 parsed = None
             else:
                 raise TooManyEndMarkers()
+
             prev_target, prev_typ, out = stack.pop()
             if parsed is not None:
                 out.append((target, parsed))
             target = prev_target
             typ = prev_typ
+
         else:
-            out.append(token)
+            out.append((key, val))
 
     if stack:
         raise NotEnoughEndMarkers()

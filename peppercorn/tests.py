@@ -248,3 +248,50 @@ def test_insufficient_end_markers():
 
     with pytest.raises(NotEnoughEndMarkers):
         parse(iem_fields)
+
+
+def test_bare_with_marker(fields):
+    from peppercorn import parse
+
+    i = 0
+    def next_id():
+        nonlocal i
+        i += 1
+        return str(i)
+
+    fields_with_marker = [
+        (key + ":" + next_id(), value)
+        for key, value in fields
+    ]
+
+    result = parse(fields_with_marker, unique_key_separator=":")
+
+    _assertFieldsResult(result)
+
+
+def test_bare_without_marker(fields):
+    # This is proof that ":" isn't something special when we don't
+    # provide a unique key separator
+    from peppercorn import START, END
+    from peppercorn import parse
+
+    fields_wo_marker = []
+
+    for key, value in fields:
+        if key not in [START, END]:
+            key = key + ":something"
+        fields.append((key, value))
+
+    result = self._callFUT(fields_wo_marker)
+
+    assert result == {
+        'series': {
+            'name:something':'date series 1',
+            'dates': [
+                ['10', '12', '2008'],
+                ['10', '12', '2009'],
+            ],
+        },
+        'name:something': 'project1',
+        'title:something': 'Cool project',
+    }
