@@ -1,6 +1,24 @@
 Changes
 =======
 
+0.7 (unreleased)
+----------------
+
+- Add Github workflow CI.
+
+- Update distribution packaging (``pyproject.toml``).
+
+- Update test runner to ``pytest``.
+
+- Refactor tests using ``pytest`` patterns.
+
+- Add support for Python 3.8, 3.9, 3.10, 3.11 and 3.12.
+
+- Drop support for 2.7, 3.4, 3.5, 3.6 and 3.7.
+
+- Remove the ``pytest.compat`` module.
+
+
 0.6 (2018-08-24)
 ----------------
 

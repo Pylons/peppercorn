@@ -1,9 +1,4 @@
 
-def data_type(value):
-    if ':' in value:
-        return [ x.strip() for x in value.rsplit(':', 1) ]
-    return ('', value.strip())
-
 START = '__start__'
 END = '__end__'
 SEQUENCE = 'sequence'
@@ -11,6 +6,30 @@ MAPPING = 'mapping'
 RENAME = 'rename'
 IGNORE = 'ignore'
 TYPS = (SEQUENCE, MAPPING, RENAME, IGNORE)
+
+
+def data_type(value):
+    if ':' in value:
+        return [ x.strip() for x in value.rsplit(':', 1) ]
+    return ('', value.strip())
+
+
+class UnknownStartMarker(ValueError):
+    def __init__(self, token):
+        self.token = token
+        super().__init__(
+            f"Unknown start marker {repr(token)}"
+        )
+
+
+class TooManyEndMarkers(ValueError):
+    def __init__(self):
+        super().__init__("Too many end markers")
+
+
+class NotEnoughEndMarkers(ValueError):
+    def __init__(self):
+        super().__init__("Not enough end markers")
 
 
 def parse(tokens):
@@ -28,7 +47,7 @@ def parse(tokens):
             if typ in TYPS:
                 out = []
             else:
-                raise ValueError("Unknown start marker %s" % repr(token))
+                raise UnknownStartMarker(token)
         elif key == END:
             if typ == SEQUENCE:
                 parsed = [v for (k, v) in out]
@@ -39,7 +58,7 @@ def parse(tokens):
             elif typ == IGNORE:
                 parsed = None
             else:
-                raise ValueError("Too many end markers")
+                raise TooManyEndMarkers()
             prev_target, prev_typ, out = stack.pop()
             if parsed is not None:
                 out.append((target, parsed))
@@ -49,6 +68,6 @@ def parse(tokens):
             out.append(token)
 
     if stack:
-        raise ValueError("Not enough end markers")
+        raise NotEnoughEndMarkers()
 
     return dict(out)
