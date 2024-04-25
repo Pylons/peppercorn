@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peppercorn"
+dynamic = ["readme"]
+version = "0.7dev0"
+description= "Convert tokens into data structure for use in web form posts"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+]
+keywords = ["web", "wsgi", "form generation", "library"]
+authors = [
+    {name="Agendaless Consulting", email="pylons-discuss@googlegroups.com"},
+]
+license = {text = "BSD-derived (http://www.repoze.org/LICENSE.txt)"}
+
+[project.urls]
+Documentation ="https://docs.pylonsproject.org/projects/peppercorn/en/latest/"
+Repository = "https://github.com/Pylons/peppercorn.git"
+Issues = "https://github.com/Pylons/peppercorn/issues"
+
+[project.optional-dependencies]
+docs = [
+    "Sphinx >= 1.7.6",
+    "pylons-sphinx-themes",
+]
+testing = [
+    "pytest",
+    "pytest-cov",
+]
+
+[tool.setuptools]
+include-package-data = true
+packages = ["peppercorn"]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "CHANGES.rst"]}
+
+[tool.pytest.ini_options]
+pythonpath = "."
+python_files = "test_*.py"
+testpaths = [ "peppercorn/tests.py" ]
+addopts = "--cov=peppercorn --cov-branch --cov-fail-under=100"
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.check-manifest]
+ignore = [
+    ".gitignore",
+    ".gitattributes",
+    "PKG-INFO",
+    "*.egg-info",
+    "*.egg-info/*",
+]
+ignore-default-rules = true
+ignore-bad-ideas = [
+    "tests/pkgs/localeapp/**/*.mo",
+]
+

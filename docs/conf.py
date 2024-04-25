@@ -13,7 +13,7 @@
 # out serve to show the default value.
 
 import datetime
-import pkg_resources
+from importlib import metadata
 import pylons_sphinx_themes
 
 
@@ -36,7 +36,7 @@ html_theme_options = dict(
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
@@ -57,7 +57,7 @@ copyright = '2011-%s, Agendaless Consulting ' \
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = pkg_resources.get_distribution('peppercorn').version
+version = metadata.version('peppercorn')
 # The full version, including alpha/beta/rc tags.
 release = version
 
