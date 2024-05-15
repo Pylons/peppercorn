@@ -1,0 +1,8 @@
+include *.md
+include *.txt
+include .travis.yml
+include tox.ini
+prune .github
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile

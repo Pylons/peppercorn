@@ -60,6 +60,7 @@ show_missing = true
 
 [tool.check-manifest]
 ignore = [
+    "setup.cfg",
     ".gitignore",
     ".gitattributes",
     "PKG-INFO",
