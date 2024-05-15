@@ -20,6 +20,7 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
 ]
+requires-python = ">= 3.8"
 keywords = ["web", "wsgi", "form generation", "library"]
 authors = [
     {name="Agendaless Consulting", email="pylons-discuss@googlegroups.com"},
