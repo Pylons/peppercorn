@@ -1,9 +1,10 @@
-from cgi import FieldStorage
 from io import BytesIO
 import unittest
 
 import pytest
 
+BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
+CRLF = '\r\n'
 
 @pytest.fixture(scope="function")
 def environ():
@@ -43,10 +44,7 @@ def fields():
 
 
 @pytest.fixture(scope="function")
-def content_type_and_body(fields):
-    BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
-    CRLF = '\r\n'
-
+def body(fields):
     lines = []
     for (key, value) in fields:
         lines.append('--' + BOUNDARY)
@@ -56,22 +54,17 @@ def content_type_and_body(fields):
     lines.append('--' + BOUNDARY + '--')
     lines.append('')
 
-    body = CRLF.join(lines)
-    content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
-
-    return content_type, body
+    return CRLF.join(lines)
 
 
 @pytest.fixture(scope="function")
-def content_type(content_type_and_body):
-    content_type, _ = content_type_and_body
-    return content_type
+def body_bytesio(body):
+    return BytesIO(body.encode("utf-8"))
 
 
 @pytest.fixture(scope="function")
-def body(content_type_and_body):
-    _, body = content_type_and_body
-    return body
+def content_type():
+    return 'multipart/form-data; boundary=%s' % BOUNDARY
 
 
 @pytest.fixture(scope="function")
@@ -82,19 +75,17 @@ def environ_for_mpfs(environ, content_type):
 
 
 @pytest.fixture(scope="function")
-def body_bytesio(body):
-    return BytesIO(body.encode("utf-8"))
-
-
-@pytest.fixture(scope="function")
 def headers(content_type, body):
     return {
         "content-length": str(len(body)),
         "content-type": content_type,
     }
 
+
 @pytest.fixture(scope="function")
-def multipart_field_storage(body_bytesio, environ_for_mpfs, headers):
+def cgi_fieldstorage(body_bytesio, environ_for_mpfs, headers):
+    from cgi import FieldStorage
+
     return FieldStorage(
         fp=body_bytesio,
         environ=environ_for_mpfs,
@@ -125,12 +116,12 @@ def test_bare(fields):
     _assertFieldsResult(result)
 
 
-def test_fieldstorage(multipart_field_storage):
+def test_w_cgi_fieldstorage(cgi_fieldstorage):
     from peppercorn import parse
 
     fields = []
 
-    for field in multipart_field_storage.list:
+    for field in cgi_fieldstorage.list:
         fields.append((field.name, field.value))
 
     result = parse(fields)
