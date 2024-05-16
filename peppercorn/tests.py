@@ -1,21 +1,11 @@
 from io import BytesIO
+import sys
 import unittest
 
 import pytest
 
 BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
 CRLF = '\r\n'
-
-@pytest.fixture(scope="function")
-def environ():
-    return {
-        "wsgi.url_scheme": "http",
-        "SERVER_NAME": "localhost",
-        "SERVER_PORT": "8080",
-        "REQUEST_METHOD":"POST",
-        "PATH_INFO": "/",
-        "QUERY_STRING":"",
-    }
 
 
 @pytest.fixture(scope="function")
@@ -63,19 +53,30 @@ def body_bytesio(body):
 
 
 @pytest.fixture(scope="function")
-def content_type():
+def content_type():  # pragma NO COVER Python >= 3.13
     return 'multipart/form-data; boundary=%s' % BOUNDARY
 
 
 @pytest.fixture(scope="function")
-def environ_for_mpfs(environ, content_type):
-    environ["CONTENT_TYPE"] = content_type
-    environ["REQUEST_METHOD"] = "POST"
-    return environ
+def wsgi_environ():  # pragma NO COVER Python >= 3.13
+    return {
+        "wsgi.url_scheme": "http",
+        "SERVER_NAME": "localhost",
+        "SERVER_PORT": "8080",
+        "REQUEST_METHOD":"POST",
+        "PATH_INFO": "/",
+        "QUERY_STRING":"",
+    }
+
+@pytest.fixture(scope="function")
+def cgi_environ(wsgi_environ, content_type):  # pragma NO COVER Python >= 3.13
+    wsgi_environ["CONTENT_TYPE"] = content_type
+    wsgi_environ["REQUEST_METHOD"] = "POST"
+    return wsgi_environ
 
 
 @pytest.fixture(scope="function")
-def headers(content_type, body):
+def cgi_headers(content_type, body):  # pragma NO COVER Python >= 3.13
     return {
         "content-length": str(len(body)),
         "content-type": content_type,
@@ -83,12 +84,14 @@ def headers(content_type, body):
 
 
 @pytest.fixture(scope="function")
-def cgi_fieldstorage(body_bytesio, environ_for_mpfs, headers):
+def cgi_fieldstorage(
+    body_bytesio, cgi_environ, cgi_headers
+):  # pragma NO COVER Python >= 3.13
     from cgi import FieldStorage
 
     return FieldStorage(
         fp=body_bytesio,
-        environ=environ_for_mpfs,
+        environ=cgi_environ,
         keep_blank_values=1,
         headers=headers,
     )
@@ -123,7 +126,11 @@ def test_bare(fields):
     _assertFieldsResult(result)
 
 
-def test_w_cgi_fieldstorage(cgi_fieldstorage):
+@pytest.mark.skipif(
+    sys.version_info >= (3, 13),
+    reason="PEP 594:  'cgi' removed from stdlib",
+)
+def test_w_cgi_fieldstorage(cgi_fieldstorage):  # pragma NO COVER
     from peppercorn import parse
 
     fields = [
