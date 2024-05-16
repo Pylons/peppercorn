@@ -29,14 +29,14 @@ jobs:
           - os: "ubuntu-latest"
             pytest-args: "--cov"
           - os: "ubuntu-latest"
-            py: "pypy-3.7"
+            py: "pypy-3.9"
             pytest-args: ""
     name: "Python: ${{ matrix.py }}-${{ matrix.architecture }} on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
           python-version: ${{ matrix.py }}
           architecture: ${{ matrix.architecture }}
@@ -48,9 +48,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Validate coverage
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.12
         architecture: x64
@@ -62,9 +62,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Build the documentation
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: 3.12
         architecture: x64
@@ -72,3 +72,17 @@ jobs:
     - run: |
         pip install tox
         tox -e docs
+  lint-pkg:
+    runs-on: ubuntu-latest
+    name: Check the packaging for sanity
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+        architecture: x64
+    - run: pip install --upgrade setuptools pip
+    - run: |
+        pip install tox
+        tox -e lint-pkg
