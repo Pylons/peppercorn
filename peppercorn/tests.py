@@ -126,10 +126,9 @@ def test_bare(fields):
 def test_w_cgi_fieldstorage(cgi_fieldstorage):
     from peppercorn import parse
 
-    fields = []
-
-    for field in cgi_fieldstorage.list:
-        fields.append((field.name, field.value))
+    fields = [
+        (part.name, part.value) for part in cgi_fieldstorage.list
+    ]
 
     result = parse(fields)
 
