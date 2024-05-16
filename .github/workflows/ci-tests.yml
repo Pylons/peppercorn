@@ -72,3 +72,17 @@ jobs:
     - run: |
         pip install tox
         tox -e docs
+  lint-pkg:
+    runs-on: ubuntu-latest
+    name: Check the packaging for sanity
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+        architecture: x64
+    - run: pip install --upgrade setuptools pip
+    - run: |
+        pip install tox
+        tox -e lint-pkg
