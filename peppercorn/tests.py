@@ -93,7 +93,7 @@ def cgi_fieldstorage(
         fp=body_bytesio,
         environ=cgi_environ,
         keep_blank_values=1,
-        headers=headers,
+        headers=cgi_headers,
     )
 
 
