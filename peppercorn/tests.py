@@ -94,6 +94,13 @@ def cgi_fieldstorage(body_bytesio, environ_for_mpfs, headers):
     )
 
 
+@pytest.fixture(scope="function")
+def multipart_multipartparser(body_bytesio):
+    from multipart import MultipartParser
+
+    return MultipartParser(body_bytesio, BOUNDARY)
+
+
 def _assertFieldsResult(result):
     assert result == {
         "series": {
@@ -123,6 +130,18 @@ def test_w_cgi_fieldstorage(cgi_fieldstorage):
 
     for field in cgi_fieldstorage.list:
         fields.append((field.name, field.value))
+
+    result = parse(fields)
+
+    _assertFieldsResult(result)
+
+
+def test_w_multipart_multipartparse(multipart_multipartparser):
+    from peppercorn import parse
+
+    fields = [
+        (part.name, part.value) for part in list(multipart_multipartparser)
+    ]
 
     result = parse(fields)
 
