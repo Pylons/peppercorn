@@ -1,8 +1,12 @@
 Changes
 =======
 
-0.7 (unreleased)
+0.7 (2024-05-18)
 ----------------
+
+- Add support for Python 3.8, 3.9, 3.10, 3.11 and 3.12.
+
+- Drop support for 2.7, 3.4, 3.5, 3.6 and 3.7.
 
 - Add Github workflow CI.
 
@@ -12,11 +16,9 @@ Changes
 
 - Refactor tests using ``pytest`` patterns.
 
-- Add support for Python 3.8, 3.9, 3.10, 3.11 and 3.12.
+- Remove the ``peppercorn.compat`` module.
 
-- Drop support for 2.7, 3.4, 3.5, 3.6 and 3.7.
-
-- Remove the ``pytest.compat`` module.
+- Update docs to build using the current version.
 
 
 0.6 (2018-08-24)

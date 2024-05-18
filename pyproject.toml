@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "peppercorn"
 dynamic = ["readme"]
-version = "0.7dev0"
+version = "0.7"
 description= "Convert tokens into data structure for use in web form posts"
 classifiers = [
     "Intended Audience :: Developers",
