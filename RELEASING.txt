@@ -49,12 +49,14 @@ Prepare new release branch via a pull request
 
 - Normalize changelog if needed (imperative voice, spacing, etc.).
 
-- Update the release number in ``setup.py``.
+- Update the release number in ``pyproject.toml``.
 
-- Make sure PyPI long description renders (requires ``readme_renderer``
-  installed into your Python)::
+- Check that the package builds correctly via:
 
-  $ python setup.py check -r -s -m
+  $ tox -re lint-pkg
+
+  Examine the generated wheel and sdist files, located in
+  ``.tox/lint-pkg/dist/``.
 
 - Use "standard" commit message for the pull request::
 
