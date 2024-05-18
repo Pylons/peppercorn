@@ -40,6 +40,7 @@ docs = [
 testing = [
     "pytest",
     "pytest-cov",
+    "multipart",
 ]
 
 [tool.setuptools]

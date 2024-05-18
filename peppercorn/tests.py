@@ -1,20 +1,11 @@
-from cgi import FieldStorage
 from io import BytesIO
+import sys
 import unittest
 
 import pytest
 
-
-@pytest.fixture(scope="function")
-def environ():
-    return {
-        "wsgi.url_scheme": "http",
-        "SERVER_NAME": "localhost",
-        "SERVER_PORT": "8080",
-        "REQUEST_METHOD":"POST",
-        "PATH_INFO": "/",
-        "QUERY_STRING":"",
-    }
+BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
+CRLF = '\r\n'
 
 
 @pytest.fixture(scope="function")
@@ -43,10 +34,7 @@ def fields():
 
 
 @pytest.fixture(scope="function")
-def content_type_and_body(fields):
-    BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
-    CRLF = '\r\n'
-
+def body(fields):
     lines = []
     for (key, value) in fields:
         lines.append('--' + BOUNDARY)
@@ -56,29 +44,7 @@ def content_type_and_body(fields):
     lines.append('--' + BOUNDARY + '--')
     lines.append('')
 
-    body = CRLF.join(lines)
-    content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
-
-    return content_type, body
-
-
-@pytest.fixture(scope="function")
-def content_type(content_type_and_body):
-    content_type, _ = content_type_and_body
-    return content_type
-
-
-@pytest.fixture(scope="function")
-def body(content_type_and_body):
-    _, body = content_type_and_body
-    return body
-
-
-@pytest.fixture(scope="function")
-def environ_for_mpfs(environ, content_type):
-    environ["CONTENT_TYPE"] = content_type
-    environ["REQUEST_METHOD"] = "POST"
-    return environ
+    return CRLF.join(lines)
 
 
 @pytest.fixture(scope="function")
@@ -87,20 +53,55 @@ def body_bytesio(body):
 
 
 @pytest.fixture(scope="function")
-def headers(content_type, body):
+def content_type():  # pragma NO COVER Python >= 3.13
+    return 'multipart/form-data; boundary=%s' % BOUNDARY
+
+
+@pytest.fixture(scope="function")
+def wsgi_environ():  # pragma NO COVER Python >= 3.13
+    return {
+        "wsgi.url_scheme": "http",
+        "SERVER_NAME": "localhost",
+        "SERVER_PORT": "8080",
+        "REQUEST_METHOD":"POST",
+        "PATH_INFO": "/",
+        "QUERY_STRING":"",
+    }
+
+@pytest.fixture(scope="function")
+def cgi_environ(wsgi_environ, content_type):  # pragma NO COVER Python >= 3.13
+    wsgi_environ["CONTENT_TYPE"] = content_type
+    wsgi_environ["REQUEST_METHOD"] = "POST"
+    return wsgi_environ
+
+
+@pytest.fixture(scope="function")
+def cgi_headers(content_type, body):  # pragma NO COVER Python >= 3.13
     return {
         "content-length": str(len(body)),
         "content-type": content_type,
     }
 
+
 @pytest.fixture(scope="function")
-def multipart_field_storage(body_bytesio, environ_for_mpfs, headers):
+def cgi_fieldstorage(
+    body_bytesio, cgi_environ, cgi_headers
+):  # pragma NO COVER Python >= 3.13
+    from cgi import FieldStorage
+
     return FieldStorage(
         fp=body_bytesio,
-        environ=environ_for_mpfs,
+        environ=cgi_environ,
         keep_blank_values=1,
-        headers=headers,
+        headers=cgi_headers,
     )
+
+
+@pytest.fixture(scope="function")
+def multipart_multipartparser(body_bytesio):
+    from multipart import MultipartParser
+
+    return MultipartParser(body_bytesio, BOUNDARY)
 
 
 def _assertFieldsResult(result):
@@ -125,13 +126,28 @@ def test_bare(fields):
     _assertFieldsResult(result)
 
 
-def test_fieldstorage(multipart_field_storage):
+@pytest.mark.skipif(
+    sys.version_info >= (3, 13),
+    reason="PEP 594:  'cgi' removed from stdlib",
+)
+def test_w_cgi_fieldstorage(cgi_fieldstorage):  # pragma NO COVER
     from peppercorn import parse
 
-    fields = []
+    fields = [
+        (part.name, part.value) for part in cgi_fieldstorage.list
+    ]
 
-    for field in multipart_field_storage.list:
-        fields.append((field.name, field.value))
+    result = parse(fields)
+
+    _assertFieldsResult(result)
+
+
+def test_w_multipart_multipartparse(multipart_multipartparser):
+    from peppercorn import parse
+
+    fields = [
+        (part.name, part.value) for part in list(multipart_multipartparser)
+    ]
 
     result = parse(fields)
 
